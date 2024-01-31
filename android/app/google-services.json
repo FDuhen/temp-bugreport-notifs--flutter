@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "997270421763",
+    "project_id": "tutonotification-d0792",
+    "storage_bucket": "tutonotification-d0792.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997270421763:android:4e0847f7f3cdaf73816936",
+        "android_client_info": {
+          "package_name": "fr.norsys.tuto.tutonotif"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYktC7DP6RPI7lwZeZHWwnfm8YlKYCIXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
