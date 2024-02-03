@@ -2,25 +2,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:tutonotif/base_component.dart';
+import 'package:tutonotif/core/notification_manager.dart';
 
 import 'firebase_options.dart';
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  print("Handling a background message: ${message.messageId}");
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp(
-      // options: DefaultFirebaseOptions.currentPlatform,
-      );
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
 
@@ -28,13 +21,15 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return BaseComponent(
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -49,44 +44,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String? _token;
-  String? _message;
-  void askNotifPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: true,
-      criticalAlert: true,
-      sound: true,
-    );
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-      setState(() {
-        _message = 'msg: $message';
-      });
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
-    });
-
-    final token = await messaging.getToken();
-    final tokenAPN = await messaging.getAPNSToken();
-
-    print('User granted permission: ${settings.authorizationStatus}');
-    print('token: $token');
-    print('tokenAPN: $tokenAPN');
-
-    setState(() {
-      _token = token;
-    });
-  }
-
   @override
   void initState() {
-    askNotifPermission();
     super.initState();
   }
 
@@ -98,16 +57,29 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Text(_token ?? ''),
-            IconButton(
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: _token ?? ''));
-              },
-              icon: const Icon(Icons.copy),
+        child: Center(
+          child: Consumer<NotificationManager>(
+            builder: (context, manager, _) => Column(
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    manager.askNotifificationPermission();
+                  },
+                  child: const Text('Ask notification permissions'),
+                ),
+                Text(manager.deviceToken ?? ''),
+                if (manager.deviceToken != null)
+                  IconButton(
+                    onPressed: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: manager.deviceToken!),
+                      );
+                    },
+                    icon: const Icon(Icons.copy),
+                  ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
