@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+              'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -50,19 +53,6 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAYktC7DP6RPI7lwZeZHWwnfm8YlKYCIXU',
-    appId: '1:997270421763:android:4e0847f7f3cdaf73816936',
-    messagingSenderId: '997270421763',
-    projectId: 'tutonotification-d0792',
-    storageBucket: 'tutonotification-d0792.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA5eBG9pxKKYseGzgwK0Ekmvz7MMhf_q3M',
-    appId: '1:997270421763:ios:019edd3376593a4c816936',
-    messagingSenderId: '997270421763',
-    projectId: 'tutonotification-d0792',
-    storageBucket: 'tutonotification-d0792.appspot.com',
-    iosBundleId: 'fr.norsys.tuto.tutonotif',
+    //Fill Here
   );
 }
